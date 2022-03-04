@@ -182,6 +182,68 @@ Algorithm:
 * **Affine** -
 * **Perspective** - 
 
+# Motion
+
+## Visual Dynamics
+> By analysing motion in the images, we look at part of the anatomy and see how it changes from subject to subject (e.g., through treatment). This can also be applied to _tracking_ (e.g., monitor where people walk).
+
+**Optical flow** - measurement of motion (direction and speed) at every pixel between 2 images to see how they change over time. Used in _video mosaics_ (matching features between frames) and _video compression_ (storing only moving information)
+
+There are `4` options of _dynamic nature_ of the vision:
+1. Static camera, static objects
+2. Static camera, moving objects
+3. Moving camera, static objects
+4. Moving camera, moving objects
+
+**Diference Picture** - a simplistic approach for identifying a feature in the image $F(x, y, i)$ at time $i$ as moved:
+
+$$DP_{12}(x,y)=\begin{cases}1 & \text{if }\ |F(x,y,1)-F(x,y,2)|>\tau \\ 0 & \text{otherwise}\end{cases}$$
+
+We also need to clean up the _noise_ - pixels that are not part of a larger image . We use **conectedness** ([more info](https://slideplayer.com/slide/4592921/) at 1:05):
+* `2` pixels are both called _4-neighbors_ if they share an edge
+* `2` pixels are both called _8-neighbors_ if they share an edge or a corner
+* `2` pixels are `4`-connected if a path of _4-neighbors_ can be created from one to another
+* `2` pixels are `8`-connected if a path of _8-neighbors_ can be created from one to another
+
+![Adjacency](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbuKK51%2FbtqTENlF8yk%2FKQa8IuCrUacL3kaTXeC0e0%2Fimg.png)
+
+## Motion Correspondence
+
+**Aperture problem** - a pattern which appears to be moving in one direction but could be moving in other directions due to only seeing the local features movement. To solve this, we use **Motion Correspondance** (_matching_).
+
+**Motion Correspondance** - finding a set of interesting features and matching them from one image to another (guided by `3` principles/measures):
+1. _Discreteness_ - distinctiveness of individual points (easily identifiable features)
+2. _Similarity_ - how closesly `2` points resemble one another (nearby features also have similar motion)
+3. _Consistency_ - how well a match conforms with other matches (moving points have a consistent motion mesured by similarity)
+
+Most popular features are corners, detected by **Moravec Operator** ([paper](http://www.frc.ri.cmu.edu/~hpm/project.archive/robot.papers/1977/aip.txt)) (doesn't work on small objects). A mask is placed over a region and moved in `8` directions to calculate intensity changes (with the biggest changes indicating a potential corner)
+
+Algorithm of **Motion Correspondence**:
+1. Pair one image's points of interest with another image's within some distance
+2. Calculate degree of similarity for each match and the likelihood
+3. Revise likelihood using nearby matches
+
+Degree of similarity $s$ is just the _sum of squared differences_ of pixels between `2` patches $i$ and $j$ (of size $N\times N$) and the likelihood is just the normalized weights $w$ (where $\alpha$ - constant)
+$$s_{ij}=\sum_{n=1}^{N\times N}(p_i^{(n)}-p_j^{(n)})^2$$
+$$w_{ij}=\frac{1}{1+\alpha s_{ij}}$$
+
+## Hough Transform
+
+A point can be represented as a coordinate (_Cartesian space_) or as a point from the origin at some angle (_Polar space_). It has many lines going through and each line can be described as a vector by angle and magnitude $w$ from some origin:
+
+$$w=x \cos \theta + y \sin \theta$$
+
+**Hough Space** - a plane defined by $w$ and $\theta$ which takes points $(x, y)$ in image space and represents them as sinusoids in the new space. Each point in such space $(w, \theta)$ is prameters for a line in the image space.
+
+**Hough Transform** - picking the "most voted" intersections of lines in the **Hough Space** which represent line in the image space passing through the original points (sinusoids in **Hough Space**)
+
+Algorithm:
+1. Create $\theta$ and $w$ for all possible lines and initialize `0`-matrix $A$ indexed by $\theta$ and $w$
+2. For each point $(x, y)$ and its every angle $\theta$ calculate $w$ and add vote at $A[\theta, w]+=1$
+3. Return a line where $A>\text{Threshold}$
+
+> There are generalised versions for ellipses, circles etc (change equation $w$). We also still need to supress non-local maxima
+
 # Questions
 1. **Introduction**
     * Why is computational vision challenging? Some applications.

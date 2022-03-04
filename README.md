@@ -9,8 +9,17 @@ This repository contains my notes and lab exercises for the _Computational Visio
 
 ## Solutions
 ### Labs
-* [Lab 1](lab1/matlab.html): Edge Detectors. (_Done_)
-* [Lab 2](lab2/matlab.html): Noise Removal. (_Done_)
+* [Lab 1](lab1/report.pdf): Edge Detectors. (_Done_)
+* [Lab 2](lab2/report.pdf): Noise Removal. (_Done_)
+* [Lab 3](lab3/report.pdf): Hough Transform. (_Done_)
+
+## Feedback
+### Lab 1
+| Criteria | Comments |
+| -------- | ------- |
+| QUESTION 1: What do you notice regarding the effect of changing the threshold? | Excellent answer and very well put together! |
+| QUESTION 2: What do you notice regarding the difference between Sobel and Roberts? | Great observations and explanations. Additional points to consider are Roberts can better detect “\” and “/” edges due to the values within the filter. Computationally Roberts is faster to compute than Sobel because it is a 2x2 matrix while Sobel is a 3x3 matrix Finally, observe the values in the SobelX and SobelY are weighted closer to the centre pixel which reduces noise within the feature map. |
+| QUESTION 3: What do you notice regarding the difference between magnitude and absolute when calculating the edge? | Excellent answer again and very well presented. Please submit snippets of your code in Appendix for us to give feedback |
 
 ## Examples
 <details><summary><b>Lab question example</b></summary>
