@@ -447,6 +447,95 @@ $$d(\mathbf{w}_{\text{new}}, \mathbf{w}_{i})=||\mathbf{w}_{\text{new}} - \mathbf
 
 > Note that the data must be comparable (same resolution) and size must be reasonable for computational reasons
 
+# Medical Image Analysis
+
+## Ultraviolet Techniques
+
+**Thermography** - imaging of the heat being radiated from an object which is measured by infrared cameras/sensors. It helps to spot increased blood flow and metabolic activity when there is an inflammation (detects breast cancer, ear infection).
+
+### X-Ray
+
+**Process of taking an _x-ray photo_**: A lamp generates electrons which are bombarded at a metal target which in turn generates high energy photons (**x-rays**). They go though some medium (e.g., chest) and those which pass though are captured on the other side what results in a <i style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">black</i> | <i style="color: #fff; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">white</i> image (e.g., high density (bones) = <b style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">white</b>, low density (lungs) = <b style="color: #6b6b6b; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">black</b>)
+
+> _X-ray photos_ are good to determine structure but we cannot inspect depth
+
+### Computed Tomography (CT)
+
+**Process of 3D reconstruction via _computed tomography_ (_CT_)**: An **x-ray** source is used to perform multiple scans across the medium to get multiple projections. The data is then back-projected to where the **x-rays** travelled to get a `3D` representation of a medium. In practice _filtered back-projections_ are used with smoothened (convolved with a filter) projected data.
+
+> _CT reconstructions_ are also concerned with structural imaging
+
+### Nuclear Medical Imaging
+
+**Process of nuclear medical imaging via _photon emission tomography (PET_)**: A subject is injected with radioactive tracers (molecules which emit radioactive energy) and then _gamma cameras_ are used to measure how much radiation comes out of the body. The detect the position of each **gamma ray** and back-projection again is used to reconstruct the medium.
+
+> _Nuclear Imaging_ is concerned with functional imaging and inspects the areas of activity. However, **gamma rays** are absorbed in different amounts by different tissues, therefore, it is usually combined with **CT**
+
+<p align="center">
+  <figure align="center" style="display: inline-block; margin: 0; width: 31.4%;">
+    <img width=100% src="https://media.wired.com/photos/610af76cd901275be20b844a/master/pass/Biz_xray_GettyImages-155601937.jpg" alt="X-Ray Scan"/>
+    <figcaption align="center">X-Ray Scans</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 31.4%; margin:0">
+    <img width=100% src="https://www.researchgate.net/profile/Cristian-Badea/publication/263475153/figure/fig1/AS:296511268245508@1447705203499/Schematic-of-the-micro-CT-imaging-process-with-image-acquisition-of-cone-beam-projections.png"
+  alt="CT Scan Process"/>
+    <figcaption align="center">CT Scan Process</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 33%; margin:0">
+    <img width=100% src="https://i.pinimg.com/564x/49/78/30/4978309a12bd0bbca3dc98326bf99a27.jpg"
+  alt="PET Scan Process"/>
+    <figcaption align="center">PET Scan Process</figcaption>
+  </figure>
+</p>
+
+
+## Other Techniques
+
+### Ultrasound Imaging
+
+**Ultrasound** - a very high pitched sound which can be emitted to determine location (e.g., by bats, dolphins). _Sonar_ devices emit a high pitch sound, listen for the echo and determine the distance to an object based on the speed of sound.  
+
+**Process of ultrasound imaging using _ultrasound probes_**: An **ultrasound** is emitted into a biological tissue and the reflection timing is detected (different across different tissue densities) which helps to work out the structure of that tissue and reconstruct its image. 
+
+> The resolution of _ultrasound images_ is poor but the technique is harmless to human body
+
+### Light Imaging
+
+**Process of light imaging using _pulse oximeters_**: as blood volume on every pulse increases, the absorption of red light increases so the changes of the intensity of light can be measured through time. More precisely, the absorption at `2` different wavelengths (red and infrared) corresponding to `2` different blood cases (oxy and deoxy) is measured whose ratio helps to infer the oxygen level in blood.
+
+> **Tissue scattering** - diffusion and scattering of light due to soft body. This is a problem because it produces diffused imaging (can't determine from which medium light bounces off exactly (path information is lost), so can't do back-projection)
+
+Several ways to solve **tissue scattering**:
+1. Multi-wavelength measurements and scattering change detection - gives information on how to resolve the bouncing off
+2. Time of flight measurements (e.g., by pulses, amplitude changes) - gives information on how far photons have travelled
+
+**Process of optical functional brain imaging using a _light detector with many fibers_**: A light travels through skin and bone to reach the surface of the brain. While a subject watches a rotating checkerboard pattern, an optical signal in the brain is measured. Using a `3D` camera _image registration_, brain activity captured via light scans can be reconstructed on a brain model.
+
+### Magnetic Resonance Imaging (MRI)
+
+**Process of looking at water concentration using _magnetic devices_**: A subject is put inside a big magnet which causes spinning electrons to align with magnetic waves. Then a coil is used around the area of interest (e.g., a knee) which uses _radiofrequency_ - it emits a signal which disrupts the spinning electrons and collects the signal (the rate of it) emitted when the electrons come back to their axes. Such information is used to reconstruct maps of water concentration.
+
+**Functional MRI (FMRI)** - due to oxygenated blood being more magnetic than deoxygenated blood, blood delivery can be monitored at different parts of the brain based on when they are activated (require oxygenated blood).
+
+> **MRI** is structural and better than **CT** because it gives better contrast between the soft tissue
+
+<p align="center">
+  <figure align="center" style="display: inline-block; margin: 0; width: 34.9%;">
+    <img width=100% src="https://i0.wp.com/www.sprawls.org/ppmi2/USPRO/usimage2.JPG" alt="Ultrasound imaging"/>
+    <figcaption align="center">Ultrasound imaging</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 28%; margin:0">
+    <img width=100% src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRShcMDjO-q_LdIxslPTmdHJe3kOIrBf8BFhZPETWqviaKun8DqkCM5i-NlyF5t-VTtnZE&usqp=CAU"
+  alt="Pulse oximeter"/>
+    <figcaption align="center">Pulse oximeter</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 33.85%; margin:0">
+    <img width=100% src="https://www.analogictips.com/wp-content/uploads/2019/03/WHTH_FAQ_MRI_Pt1_Fig4-768x594.png"
+  alt="MRI Scanner"/>
+    <figcaption align="center">MRI Scanner</figcaption>
+  </figure>
+</p>
+
 # Questions
 1. **Introduction**
     * Why is computational vision challenging? Some applications.
