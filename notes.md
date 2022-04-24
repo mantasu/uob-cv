@@ -536,6 +536,42 @@ Several ways to solve **tissue scattering**:
   </figure>
 </p>
 
+# Object Recognition
+
+## Model Based
+
+**Viewpoint-invariant** - non-changing features that can be obtained regardless of the viewing conditions. More _sensitivity_ requires more features which is challenging to extract and more _stability_ requires fewer features which are always constant.
+
+**Marr's** _model-based_ approach on reconstructing `3D` scene from `2D` information:
+1. **Primal sketch** - understanding what the intensity changes in the image represent (e.g., color, corners)
+2. **`2.5D` sketch** - building a viewer-centered representation of the object (object can be recognized from viewer angle)
+3. **Model selection** - building an object-centered representation of the object (object can be recognized from all angles)
+
+> **Marr's** algorithm approaches the problem in a top-down approach (like brain): it observes a general shape (e.g., human), and then if it needs it gets into details (e.g., every human hair). It's object-centered - shape doesn't change depending on view.
+
+**Recognition by Components Theory** - recognizing objects by matching visual input against structural representations of objects in the brain, consisting of geons and their relations
+
+> The problem is that there is an infinite variety of objects so there is no efficient way to represent and store the models of every object. Even a library containing `3D` parts (building blocks), would not be big enough and would need to be generalized.
+
+## Appearance Based
+
+**Appearance based recognition** - characterization of some aspects of the image via statistical methods. Useful when a lot of information is captured using multiple viewpoints because An object can look different from a different angle and it may be difficult to recognize using a model which is **viewpoint-invariant**. A lot of processing is involved in statistical approach.
+
+> **SIFT** can be applied to find features in the desired image which can further be re-described (e.g., scaled, rotated) to match the features in the dataset for recognition (note: features must be collected from different viewpoints in the dataset)
+
+### Category Level Recognition
+
+**Part Based Model** - identifying an object by parts - given a bag of features within the appearance model, the image is checked for those features and determined whether it contains the object. However, we want structure of the parts (e.g., order)
+
+**Constellation Model** - takes into account geometrical representation of the identified parts based on _connectivity models_. It is a probabilistic model representing a class by a set of parts under some geometric constraints. Prone to missing parts.
+
+**Hierarchical Architecture** for object recognition (extract to hypothesize, register to verify):
+1. Extract local features and learn more complex compositions
+2. Select the most statistically significant compositions
+3. Find the category-specific general parts
+
+> **Appearance based** recognition is a more sophisticated technique as it is more general for different viewpoints, however **model based** techniques work well for non-complex problems because they are very simple.
+
 # Questions
 1. **Introduction**
     * Why is computational vision challenging? Some applications.
