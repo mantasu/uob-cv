@@ -363,29 +363,87 @@ $$E[C(p)]=\alpha \int_0^1 E_{int}[C(p)]dp + \beta \int_0^1 E_{img}[C(p)]dp + \ga
   </figure>
 </p>
 
-# Active 3D Imaging
-
-There are 2 types of imaging:
-1. **Passive Imaging**  - we are concerned with the light that reaches us (may cause shadows (difficult seeing), reflections (fake correspondences)). 3D information is acquired from a shared field of view (units don't interfere!)
-2. **Active Imaging** we use the light that we control. It robustly performs dense measurements but light is absorbed by dark surfaces and reflected by specular surfaces (no signal) 
+# 3D Imaging
 
 For **3D imaging** many images are collected to construct a smooth 3D scene. It is used in archeology (sharing discoveries), industrial inspection (verifying product standard), biometrics (recognizing 3D faces vs photos), augmented reality (IKEA app)
 
 > 3D imaging is useful because it can remove the necessity to process low level features of 2D images: removes effects of directional illumination, segments foreground and background, distinguishes object textures from outlines
 
-**Depth** - given a line on which the object exists, it is the shortest distance to the line from the point of interest. Can be measured in multiple ways:
-1. **Passive**:
-   * _Stereophotogrammetry_ - multiple viewpoints simultaneously (hard to find pixel correspondence).
-   * _Structure from motion_ - multiple viewpoints sequentially (more change = more sparsity)
-   * _Depth from focus_ - scene's focus based on camera's depth-of-field (mainly sharp edges become blurry on camera's focus but not everything has sharp edges)
-2. **Active**:
-   * _Active stereophotogrammetry_ - uses IR to project surface features and solves correspondence problem, however lack of detail produces holes and error depends on distance between cameras
-   * _Time of flight_ - time taken for light to travel from camera to the scene. _Lidars_ (sequential; slow but robust) are used to send lasers - they are rotated to acquire and image and each measurement is taken at different time. _Flight Cameras_ (simultaneous; fast but expensive) use light-waves that bump from objects (waves from different objects are offset).
+**Depth** - given a line on which the object exists, it is the shortest distance to the line from the point of interest
+
+## Passive Imaging
+
+**Passive Imaging**  - we are concerned with the light that reaches us. 3D information is acquired from a shared field of view (units don't interfere!)
+
+> Environment may contain shadows (difficult seeing), reflections (change location of different views = fake correspondences), don't have enough surface features
+
+### Stereophotogrammetry
+
+Surface is observed from multiple viewpoints simultaneously. Unique regions of the scene are found in all pictures (which can differ based on perspective) and the distance to the object is calculated considering the dispersity.
+
+> Difficult to find pixel correspondence
+
+### Structure from motion
+
+Surface is observed from multiple viewpoints sequentially. A single camera is moved around the object and the images are combined to construct an object representation.
+
+> If illumination, time of the day, cameras are changing, there is more sparsity
+
+### Depth from focus
+
+Surface is observed from different focuses based on camera's depth-of-field (which depends on the lens of the camera and the aperture). The changes are continuous. A focal stack can be taken and a depth map can be generated (though quite noisy).
+
+> Difficult to get quantitative numbers. Also mainly sharp edges become blurry when camera is not in focus but not everything has sharp edges
+
+<p align="center">
+  <figure align="center" style="display: inline-block; margin: 0; width: 26%;">
+    <img width=100% src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2F2196-1042-14-32/MediaObjects/40510_2013_Article_13_Fig2_HTML.jpg" alt="Stereophotogrammetry"/>
+    <figcaption align="center">Stereophotogrammetry</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 34.7%; margin:0">
+    <img width=100% src="https://www.researchgate.net/profile/Sjoerd-Van-Riel-2/publication/303824023/figure/fig3/AS:370256326479881@1465287395641/Structure-from-Motion-SfM-photogrammetric-principle-Source-Theia-sfmorg-2016.png"
+  alt="Structure from motion"/>
+    <figcaption align="center">Structure from motion</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 37.8%; margin:0">
+    <img width=100% src="https://prometheus.med.utah.edu/~bwjones/wp-content/uploads/2009/03/Focus-stack1.gif"
+  alt="Depth from focus"/>
+    <figcaption align="center">Depth from focus</figcaption>
+  </figure>
+</p>
+
+## Active Imaging
+
+**Active Imaging** - we use the light that we control. It robustly performs dense measurements because little computation is involved, just direct measurements.
+
+> Light can be absorbed by dark surfaces and reflected by specular surfaces causing no signal, also multiple units may interfere with each other
+
+### Active stereophotogrammetry
+
+_Infrared_ light is used to project surface features and solve the problem of "not enough surface features". Since there is more detail from different viewpoints and since we don't care about patterns (only features themselves), it is easier to find correspondences
+
+> Lack of detail produces holes and error depends on distance between cameras. Also, projector brightness decreases with distance therefore things far away cannot be captured.
+
+### Time of flight
+
+Distance from the object is found by the time taken for light to travel from camera to the scene. _Directional illumination_ is used to focus photon shooting at just one direction which restricts the view area. Two devices are used:
+* **Lidar** - has a photosensor and a lase pulse on the same axis which is rotated and each measurement is acquired through time. It is robust, however hard to measure short distances due to high speed of light; also is large and expensive.
+* **Time of flight camera** - can image the scene all at once. It uses a spatially resolved sensor which fires light waves instead of pulses and each light wave is recognized by its relative phase. It is fast but depth measure depends on wave properties.
+
+### Structured light imaging
+
+### Photometric stereo
+
+1. **Active**:
    * _Structured light imaging_ - a camera and a projector is used at different perspectives. _Point scanner_ (1D; slow) and _laser line scanner_ (2D; faster) are used to measure direction.
    * _Photometric stereo_ - 
 
+## Data Representation
+
 # Face Recognition with PCA
+
 ## PCA
+
 **PCA** - algorithm that determines the dominant modes of variation of the data and projects the data onto the coordinate system matching the shape of the data.
 
 **Covariance** - measures how much each of the dimensions vary with respect to each other. Given a dataset $D=\{\mathbf{x_1},...,\mathbf{x_N}\}$, where $\mathbf{x_N}\in\mathbb{R}^{D}$, the variance of some feature in dimension $i$ and the covariance between a feature in dimension $i$ and a feature in dimension $j$ can be calculated as follows:
