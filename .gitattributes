@@ -1,0 +1,5 @@
+# Ignore HTML language
+*.html linguist-vendored=false
+
+# Recognize MATLAB notebooks
+*.mlx linguist-language=MATLAB
