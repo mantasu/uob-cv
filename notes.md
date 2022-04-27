@@ -427,18 +427,110 @@ _Infrared_ light is used to project surface features and solve the problem of "n
 ### Time of flight
 
 Distance from the object is found by the time taken for light to travel from camera to the scene. _Directional illumination_ is used to focus photon shooting at just one direction which restricts the view area. Two devices are used:
+
 * **Lidar** - has a photosensor and a lase pulse on the same axis which is rotated and each measurement is acquired through time. It is robust, however hard to measure short distances due to high speed of light; also is large and expensive.
 * **Time of flight camera** - can image the scene all at once. It uses a spatially resolved sensor which fires light waves instead of pulses and each light wave is recognized by its relative phase. It is fast but depth measure depends on wave properties.
 
 ### Structured light imaging
 
+To save hardware resources, a projector and a camera are used at different perspectives (unlike in **time of flight** where they were on the same diagonal). Projected patterns give more information because they can encode locations onto the surface.
+
+* **Point scanner** (`1D`) - the position and the direction of the laser is checked and it is calculated where the intersection occurs in the image taken by camera. It is slow because for every point there has to be an image.
+* **Laser line scanner** (`2D`) - a plane is projected which gives information about the curve of the surface. The depth is then calculated for a line of points in a single image. It is faster but not ideal because image is still not measured at once.
+
+> This technique is more accurate (especially for small objects), however the field of view is reduced and there is more complexity in imaging and processing time. Useful in industries where object, instead of laser, moves.
+
+It is time-consuming to move one stripe over time, instead multiple stripes can be used to capture all the object at once. However, if the stripes look the same, camera could not distinguish their location (e.g., if one stripe is behind an object). **Time multiplexing** is used.
+
+**Time multiplexing** - different patterns of stripes (arrangements of binary stripes) are projected and their progression through time (i.e., a set of different projections) is inspected to give an encoding of each pixel location in a `3D` space.
+  * For example, in _binary encoding_, projecting `8` different _binary patterns_ of <i style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">black</i> | <i style="color: #fff; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">white</i>, i.e., `[`<code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code>`,` <code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code><code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code>`,` $\cdots$`,` <code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code><code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code><code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code><code style="color: #888; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">b</code><code style="color: #ddd; text-shadow: -2px 0 #000, 0 2px #000, 2px 0 #000, 0 -2px #000;">w</code>`]`, onto an object, for every resolution point would give an encoding of `8` bits, each bit representing `1` or `0` for the stripe it belongs to at every pattern. There are $2^8$ ways to arrange these bits giving a total of `256` single pixel values.
+  * **Hamming distance** - a metric for comparing `2` binary data (sum of digits of a difference between each bit), for instance, the distance between $4$ (`0100`) and $14$ (`1110`) is $2$, whereas between $4$ (`0100`) and $6$ (`0110`) is $1$
+  * Given that **Grey Code** has a **Hamming distance** of `1` and **Inverse Grey Code** has a **Hamming distance** of `N-1`, progression _binary encodings_ belong to neither category. This means a lot of flexibility and a variety of possible algorithms.
+
+> In **time multiplexing**, because of the lenses, _defocus_ may occur which mangles the edges and because of the high frequency information about regions could be lost. **Sinusoidal patterns** are used which are continuous and less affected by _defocus_.
+
+**Sinusoidal patterns** - patterns encoded by a geometric function ($\sin(2\pi f \phi) + 1) / 2$ which has a frequency and a phase which encodes a pixel location. They work as **time of flight cameras** - the longer the waves (lower $f$), the larger the range, but more noise.
+
+> Reconstructing the surface from the wave patterns can cause ambiguities if surface is discontinuous so waves either have to be additionally encoded (labeled) or frequency should be dynamic (low $\to$ high)
+
 ### Photometric stereo
 
-1. **Active**:
-   * _Structured light imaging_ - a camera and a projector is used at different perspectives. _Point scanner_ (1D; slow) and _laser line scanner_ (2D; faster) are used to measure direction.
-   * _Photometric stereo_ - 
+The goal is to calculate the orientation of the surfaces, not the depth - only the lighting changes, the location and perspective stays the same. If an absolute location of one point in the map is known, with integration other location can be found. LED illumination is used.
+* **Lambertian reflectance** - depends on the angle $\theta$ between the surface normal and the ray to light
+* **Specular reflectance** - depends on the angle $\alpha$ between reflected ray to light and ray to observer
+
+For simplicity, we assume there is no **specular reflectance** (that surface normal doesn't depend on it). We also assume light source is infinitely far away (constant) The diffusive illumination for each $i^{th}$ light source can be calculated as:
+
+$$I_d=I_pk_d(\mathbf{l}_i \cdot \mathbf{n})$$
+
+Where:
+<ul style="columns:2;">
+
+  <li>
+
+  $\mathbf{l}_i$ - direction to light from surface
+
+  </li>
+
+  <li>
+
+  $\mathbf{n}$ - surface normal (different for each pixel)
+
+  </li>
+
+  <li>
+
+  $k_d$ - constant reflectance
+
+  </li>
+
+  <li>
+
+  $I_p$ -constant light spread
+
+  </li>
+
+</ul>
+
+Assuming $\rho=I_pk_d$ and vectorizing the light sources, after some rearrangement we can estimate the surface normal as (knowing $\mathbf{n}$ at each pixel and a some starting point (integration constant), integration is the possible):
+
+$$\rho\mathbf{n}=(L^{\top}L)^{-1}L^{\top}\mathbf{i}$$
+
+> **Photometric stereo** requires many assumptions about illumination and surface reflectance also a point of reference, also precision is no guaranteed because depth is estimated from estimated surface normals
+
+
+<p align="center">
+  <figure align="center" style="display: inline-block; margin: 0; width: 15.2%;">
+    <img width=100% src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/LIDAR-scanned-SICK-LMS-animation.gif/220px-LIDAR-scanned-SICK-LMS-animation.gif" alt="Lidar"/>
+    <figcaption align="center">Lidar</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 38%; margin:0">
+    <img width=100% src="https://www.researchgate.net/profile/Vahid-Dabbagh/publication/266396209/figure/fig1/AS:392302750126088@1470543672782/Schematic-figure-of-laser-line-scanning-sensor.png"
+  alt="Structured light imaging"/>
+    <figcaption align="center">Structured light imaging</figcaption>
+  </figure>
+  <figure align="center" style="display: inline-block; width: 44%; margin:0">
+    <img width=100% src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Photometric_stereo.png"
+  alt="Photometric stereo"/>
+    <figcaption align="center">Photometric stereo</figcaption>
+  </figure>
+</p>
 
 ## Data Representation
+
+### Surface reconstruction
+
+After acquiring a depth map, it is converted (based on the pose and the optics of the camera) to point cloud which contains locations in space for each `3D` point. Their neighborhoods help estimate surface normals which are used to build surfaces.
+
+**Poisson surface reconstruction** - a function where surface normals are used as gradients - inside shape is annotated by ones, outside by zeros. It is a popular function to reconstruct surfaces from normals. It helps to create unstructured meshes.
+
+### Surface registration
+
+Knowing a scene representation at different timesteps, they can be combined into one scene via _image registration_. A model of the scene is taken and its point cloud representations and the best fit is found. If point correspondences are missing, they are inferred. Once all points are known, **Kabsch algorithm** is applied to find the best single rigid transformation which optimizes the correspondences.
+
+**Kabsch algorithm** - given `2` point sets $P$ and $Q$, the distance between points in one set and the transformed points in the other set are being minimized: $\min_{R,t}||\mathbf{p}_i-(R\mathbf{q}_i+\mathbf{t})||_2^2$
+
+> Point inferring can be done in multiple ways, a simplest one is via _iterative closest point_ where closest points in each set are looked for and the best transformation to reach those points is performed iteratively until the points match.
 
 # Face Recognition with PCA
 
