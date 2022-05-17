@@ -53,6 +53,17 @@ $$E=hf$$
 
 > Perceivable electromagnetic radiation wavelengths are within `380` to `760` nm
 
+**Law of Geometric Optics**:
+1. Light travels in straight lines
+2. Ray, its reflection and the normal are _coplanar_
+3. Ray is refracted when it transits medium
+
+**Snell's Law** - given refraction indeces $n_1$ and $n_2$, and "in" and "out" angles $\alpha_1$ and $\alpha_2$, there is a relation: $n_1 \sin \alpha_1=n_2 \sin \alpha_2$
+
+
+<center><img alt="Geometric Optics" src="https://glossary.oilfield.slb.com/-/media/publicmedia/ogl98151.ashx?sc_lang=en"></center>
+
+
 **Focal length** $f$ (`m`) - distance from lens to the point $F$ where the system converges the light. The power of lens (how much the lens reduces the real world to the image in plane) is just $\frac{1}{f}$ (`D`) (~`59D` for human eye)
 
 ![Lens Formula and Magnification](https://s3.amazonaws.com/bucketeer-6a6b5dd7-82e9-48dd-b3be-ec23fe6cc180/notes/images/000/000/060/original/lens-formula.jpg?1583773717)
@@ -145,7 +156,7 @@ We use a uniform filter (e.g., in `3`-by-`3` case all filter values are $\frac{1
 
 $$H_{ij}= \frac{1}{2\pi\sigma^2}\exp \left(-\frac{(i-(k+1))^2+(j-(k+1))^2}{2\sigma^2} \right) ; 1 \leq i, j \leq (2k + 1)$$
 
-> **Laplacian of Gaussian** - _Laplassian_ + _Gaussian_ which smoothens the image (necessary before _Laplassian_ operation) with _Gaussian_ filter and calculates the edge with **Laplassian Operator**
+> **Laplacian of Gaussian** - _Laplacian_ + _Gaussian_ which smoothens the image (necessary before _Laplacian_ operation) with _Gaussian_ filter and calculates the edge with **Laplacian Operator**
 
 Note the noise suppression-localization tradeoff: larger mask size reduces noise but adds uncertainty to edge location. Also note that the smoothness for _Gaussian_ filters depends on $\sigma$.
 
@@ -721,6 +732,28 @@ Several ways to solve **tissue scattering**:
 3. Find the category-specific general parts
 
 > **Appearance based** recognition is a more sophisticated technique as it is more general for different viewpoints, however **model based** techniques work well for non-complex problems because they are very simple.
+
+# Robot Vision
+
+**CMOS | CCD sensor** - a digital camera sensor composed of a grid of _photodiodes_. One _photodiode_ can capture one `RGB` color, therefore, specific pattern of diodes is used where a subgrid of diodes provides information about color (most popular - **Bayer filter**).
+
+**Bayer fillter** - an `RGB` mask put on top of a digital sensor having twice as many green cells as blue/red to accomodate human eye. A cell represents a color a diode can capture. For actual pixel color, surrounding cells are also involved.
+
+> Since depth information is lost during projection, there is ambiguity in object sizes due to perspective
+
+### Pinhole Camera
+
+**Pinhole camera** - abstract camera model: a box with a hole which assumes only one light ray can fit through it. This creates an inverted image on the _image plane_ which is used to create a virtual image at the same distance from the hole on the _virtual plane_.
+
+![Pinhole Camera](https://www.researchgate.net/profile/Chandra-Sekhar-Gatla/publication/41322677/figure/fig1/AS:648954270216192@1531734163239/A-pinhole-camera-projecting-an-object-onto-the-image-plane.png)
+
+Given a true point $=\begin{bmatrix}x & y & z\end{bmatrix}^{\top}$ and a projected point $P'=\begin{bmatrix}x' & y' & z'\end{bmatrix}^{\top}$ (where $z'=f'$ and focal distance is usually given) and that $P'O=\lambda PO$ (beacsue $PO$ and $P'O$ are collinear ($O$ - hole), by _similar triangles_:
+
+$$\begin{bmatrix}x' & y' & z'\end{bmatrix}^{\top}\to\begin{bmatrix}f'(x/z) & f'(y/z) & f'\end{bmatrix}^{\top}$$
+
+Such **weak-perspective projection** is used when scene depth is small because _magnification_ $m$ is assumed to be constant, e.g.,  $x'=-m x$, $y'=-m y$. **Parallel projection** where points are parallel along $z$ can fix this but are unrealistic.
+
+> **Pinhole cameras** are dark to allow only a small amount of rays hit the screen (to make the image sharp). _Lenses_ are used instead to capture more light.
 
 # Deep Learning for Computer Vision
 
