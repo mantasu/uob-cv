@@ -735,13 +735,13 @@ Several ways to solve **tissue scattering**:
 
 # Robot Vision
 
+## Pinhole Camera
+
 **CMOS | CCD sensor** - a digital camera sensor composed of a grid of _photodiodes_. One _photodiode_ can capture one `RGB` color, therefore, specific pattern of diodes is used where a subgrid of diodes provides information about color (most popular - **Bayer filter**).
 
 **Bayer fillter** - an `RGB` mask put on top of a digital sensor having twice as many green cells as blue/red to accomodate human eye. A cell represents a color a diode can capture. For actual pixel color, surrounding cells are also involved.
 
 > Since depth information is lost during projection, there is ambiguity in object sizes due to perspective
-
-### Pinhole Camera
 
 **Pinhole camera** - abstract camera model: a box with a hole which assumes only one light ray can fit through it. This creates an inverted image on the _image plane_ which is used to create a virtual image at the same distance from the hole on the _virtual plane_.
 
@@ -754,6 +754,50 @@ $$\begin{bmatrix}x' & y' & z'\end{bmatrix}^{\top}\to\begin{bmatrix}f'(x/z) & f'(
 Such **weak-perspective projection** is used when scene depth is small because _magnification_ $m$ is assumed to be constant, e.g.,  $x'=-m x$, $y'=-m y$. **Parallel projection** where points are parallel along $z$ can fix this but are unrealistic.
 
 > **Pinhole cameras** are dark to allow only a small amount of rays hit the screen (to make the image sharp). _Lenses_ are used instead to capture more light.
+
+
+## Camera Geometry
+
+### Camera Calibration
+
+Projection of a `3D` coordinate system is _extrinsic_ (`3D` world $\to$ `3D` camera) and _intrinsic_ (`3D` camera $\to$ `2D` image). An acquired point in camera `3D` coordinates is projected to _image plane_, then to discretisized image. General camera has `11` projection parameters.
+
+For _extrinsic_ projection real world coordinates are simply aligned with the camera's coordinates via translation and rotation:
+
+$$\tilde{X}_{\text{cam}}=R(\tilde{X}-\tilde{C})$$
+
+**Homogenous coordinates** - "projective space" coordinates (_Cartesian coordinates_ with an extra dimension) which preserve the scale of the original coordinates. E.g., scaling $\begin{bmatrix}x & y & 1\end{bmatrix}^{\top}$ by $w$ (which is usually distance from projector to screen) gives $\begin{bmatrix}wx & wy & w\end{bmatrix}^{\top}$.
+
+> In **_normalized_ camera coordinate system** origin is at the center of the image plane. In the **image coordinate styste** origin is at the corner.
+
+**Callibration matrix** $K$ - a matrix used to compute projection matrix $P_0$ for a `3D` camera coordinate to discrete pixel
+
+$$\begin{pmatrix}x' \\ y' \\ z'\end{pmatrix}=\underbrace{\begin{bmatrix}\alpha_x & s & x_0 \\ 0 & \alpha_y & y_0 \\ 0 & 0 & 1\end{bmatrix}\begin{bmatrix}1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0\end{bmatrix}}_{P_0=K \cdot [I|0]}\begin{pmatrix}x \\ y \\ z \\ 1\end{pmatrix}$$
+
+Where:
+* _$\alpha_x$_ and _$\alpha_y$_ - focal length $f$ (which acts like $z$ (i.e., like extra dimension $w$) to divide $x$ and $y$) multiplied by discretization constant $m_x$ or $m_y$ (which is the number of pixles per sensor dimension unit)
+* _$x_0$_ and _$y_0$_ - offsets to shift the camera origin to the corner (results in only positive values)
+* _$s$_ - the sensor sceweness: it is usually not a perfect rectangle
+
+> Lens adds nonlinearity for which symmeric radial expansion is used (for every point from the origin the radius changes but the angle remains) to un-distort. Along with shear, this transformation is captured in _$s$_ (see above).
+
+For a general projection matrix, we can obtain a translation vector $\mathbf{t}=-R\tilde{C}$ and write a more general form (assuming _homogenousity_):
+
+$$X'=K[R|\mathbf{t}]X=PX$$
+
+<div style="text-align: justify;">
+
+If `3D` coordinates of a real point and `2D` coordinates of a projected point are known, then, given a patern of such points, $P$ can be computed by putting a calibration object in front of camera and determining correspondences between image and world coordinates, i.e., "`3D`$\to$`2D`" mapping is solved, e.g., via _Direct Linear Transformation_ (_DLT_) (see [this video](https://www.youtube.com/watch?v=3NcQbZu6xt8)) or _reprojection error_ optimization. If positions/orientations are not known, **multiplane camera calibration** is performed where only many images of a single patterned plane are needed.
+
+</div>
+
+### Vanishing Points and Homography
+
+Given a point $A$ and its direction $D$ towards a _vanishing point_, any further point is found by $X(\lambda)=A+\lambda D$. If that point is very far, $\lambda=\infty$, $A$ becomes insignificant and projection results in _vanishing point_ itself: $\mathbf{v}=\begin{bmatrix}f x_D/z_D & f y_D / z_D\end{bmatrix}^{\top}$.
+
+> **Horizon** - connected _vanishing points_ of a plane. Each set of parallel lines correspond to a different _vanishing point_.
+
+**Homography** - projection from plane to plane: $w\mathbf{x}'=H\mathbf{x}$ (used in stitching, augmented reality etc). Projection matrix $H$ can be estimated by applying _DLT_.
 
 # Deep Learning for Computer Vision
 
