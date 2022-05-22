@@ -914,6 +914,28 @@ Actually, before the main procedure of **SIFT**, the orientation must be normali
 
 > When feature matches are found, they should be symmetric
 
+## Multiple-View Geometry
+
+**Stereo imaging** (**triangulation**) - given several images of the same object, its `3D` representation is computed (e.g., depth map, point cloud, mesh etc.)
+
+`3D` point reconstruction can be calculated by intersection of `2` rays (projection points in the images). In practice, rays will not intersect, therefore _linear_ and _non-linear_ approaches are considered (note: `3D` point is unknown but the projection points in the `2` images are known):
+1.  The former solves a _homogenous_ system by **SVD** resulting in the desired `3D` point being the smallest _eigenvector_. It generalizes well but has error cases.
+2. The latter introduces a _reprojection error_ (mismatch between true and generated projections of a predicted `3D` point). True point is detected when the error is minimized. It's very accurate but requires iterative solution.
+
+If the correspondence in another image is not known but cameras are in parallel, then given their focal length $f$, distance between their optical centers $T$, distance between the `2` projected points (_disparity_) $x_l - x_r$, the distance (_depth_) $Z_p$ to the point can be computed using _similar triangles_:
+
+![Geometry of a simple stereo system](https://www.cs.auckland.ac.nz/courses/compsci773s1t/lectures/773-GG/figures/stereo-coords.gif)
+
+If cameras are not in parallel, _disparity_ won't help, thus _epipolar geometry_ is considered which simplifies the correspondence problem to `1D` search along an _epipolar_ line. In one image a ray from the projected point to the `3D` point is projected in another image (_epipolar_ line) where we look for a point from which the ray (to the `3D` point) would be projected in the initial image crossing its projected point. Connecting those points with _epipoles_ (where _base line_ crosses image plane) results in _epipolar plane_.
+
+![Geometry of a general stereo system](https://www.spiedigitallibrary.org/ContentImages/Journals/OPEGAR/56/8/084103/FigureImages/OE_56_8_084103_f001.png)
+
+If camera calibrations are known, _essential matrix_ $E=T\times R$ can be constructed which relates the corresponding image points (translation cross rotation) and assuming $\mathbf{p}_l$ and $\mathbf{p}_r$ (e.g., $\mathbf{p}_l=\begin{bmatrix}x_l & y_l & f\end{bmatrix}^{\top}$) are rays from camera centers to corresponding points, the following **Epipolar Constraint** holds (note that vector $(\mathbf{p}_l^{\top}E)^{\top}$ represents _epipolar line_ $\mathbf{l}_{pr}$ and vector $E\mathbf{p}_r$ - $\mathbf{l}_{pl}$):
+
+$$\mathbf{p}_l^{\top}E\mathbf{p}_r=0$$
+
+For a non-calibrated system coordinates cannot be transformed, therefore **stereo image rectification** is performed - images are reprojected onto a common plane, parallel to the _base line_ where the depth can be computed based on _disparity_. however by combining left and right cameras' intrinsic parameters $K_l$ and $K_r$, a _fundamental matrix_ can be acquired $F=(K_l^{\top})^{-1}EK_r$
+
 # Deep Learning for Computer Vision
 
 Learning types:
