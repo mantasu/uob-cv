@@ -920,6 +920,8 @@ Actually, before the main procedure of **SIFT**, the orientation must be normali
 
 ## Multiple-View Geometry
 
+### Stereophotogrammetry
+
 **Stereo imaging** (**triangulation**) - given several images of the same object, its `3D` representation is computed (e.g., depth map, point cloud, mesh etc.)
 
 `3D` point reconstruction can be calculated by intersection of `2` rays (projection points in the images). In practice, rays will not intersect, therefore _linear_ and _non-linear_ approaches are considered (note: `3D` point is unknown but the projection points in the `2` images are known):
@@ -934,11 +936,39 @@ If cameras are not in parallel, _disparity_ won't help, thus _epipolar geometry_
 
 ![Geometry of a general stereo system](https://www.spiedigitallibrary.org/ContentImages/Journals/OPEGAR/56/8/084103/FigureImages/OE_56_8_084103_f001.png)
 
-If camera calibrations are known, _essential matrix_ $E=T\times R$ can be constructed which relates the corresponding image points (translation cross rotation) and assuming $\mathbf{p}_l$ and $\mathbf{p}_r$ (e.g., $\mathbf{p}_l=\begin{bmatrix}x_l & y_l & f\end{bmatrix}^{\top}$) are rays from camera centers to corresponding points, the following **Epipolar Constraint** holds (note that vector $(\mathbf{p}_l^{\top}E)^{\top}$ represents _epipolar line_ $\mathbf{l}_{pr}$ and vector $E\mathbf{p}_r$ - $\mathbf{l}_{pl}$):
+> To get an _epipolar line_ when some point is selected on the left image, there has to be some constraints for the stereo system.
+
+If camera calibrations are known, _essential matrix_ $E=T\times R$ can be constructed which relates the corresponding image points (translation cross rotation) and assuming $\mathbf{p}_l$ and $\mathbf{p}_r$ (e.g., $\mathbf{p}_l=\begin{bmatrix}x_l & y_l & f\end{bmatrix}^{\top}$) are rays from camera centers to corresponding points, the following **Epipolar Constraint** holds (note that vector $(\mathbf{p}_l^{\top}E)^{\top}$ represents _epipolar line_ $\mathbf{l}_{pr}$ and vector $E\mathbf{p}_r$ represents $\mathbf{l}_{pl}$):
 
 $$\mathbf{p}_l^{\top}E\mathbf{p}_r=0$$
 
-For a non-calibrated system coordinates cannot be transformed, therefore **stereo image rectification** is performed - images are reprojected onto a common plane, parallel to the _base line_ where the depth can be computed based on _disparity_. however by combining left and right cameras' intrinsic parameters $K_l$ and $K_r$, a _fundamental matrix_ can be acquired $F=(K_l^{\top})^{-1}EK_r$
+For a non-calibrated system coordinates cannot be transformed,  however by combining left and right cameras' intrinsic parameters $K_l$ and $K_r$, a _fundamental matrix_ can be acquired $F=(K_l^{\top})^{-1}EK_r$. Then $E$ can be substituted by $F$ but instead of image plane coordinates $\mathbf{p}_l$ and $\mathbf{p}_r$, image pixels have to be used (since they are multiplied by $(K_l^{\top})^{-1}$ and $K_r$ to give $\mathbf{p}_l$ and $\mathbf{p}_r$):
+
+$$\mathbf{x}_l^{\top}F\mathbf{x}_r=0$$
+
+> If optical axes are parallel **stereo image rectification** is performed - images are reprojected onto a common plane, parallel to the _base line_ where the depth can be computed based on _disparity_.
+
+To estimate $F$, we need to collect some good correspondence examples to "reverse engineer" $F$:
+
+* _Assumptions_: points in both cameras are visible, regions are similar and the baseline is small compared to depth
+* _Correspondences_: once a feature point is selected in one image, a corresponding feature in the other image is checked via _dense correspondences_ - a window is slide through _epipolar line_ and such regions is selected where the cost is the lowest (best similarity)
+* _Constraints_ - `1-1` correspondence, same order of points (no in-between objects), locally smooth _disparity_
+
+### Structure from Motion
+
+**SFM** - reconstruction of camera positions given several images of the same scene
+
+To compute the projection matrix $P_j$, calibration matrix $K_j$, rotation $R_j$ and translation $\mathbf{t}_j$ parameters are required which can be computed from _essential_ matrix $E_j$ which can be computed from _fundamental_ matrix $F_j$. If the camera is moving, the calibration matrices $K_j$ are all the same. $F$ is estimated such that it minimizes the projection errors (note that good initialization is required):
+
+$$\epsilon(F)=\frac{1}{N}\sum_{n=1}^N\left(d^2(\mathbf{x}_l^{(i)}, F\mathbf{x}_r^{(i)}) + d^2(\mathbf{x}_r^{(i)}, F^{\top}\mathbf{x}_l^{(i)})\right)$$
+
+<center><div style="background-image: url('https://d2hpwsdp0ihr0w.cloudfront.net/sessions/5fb714e1-2e23-470f-b1e0-ae6800b555c1/a3c1e311-209a-4286-97ca-ae6800b55441_et/thumbs/slide22741096.jpg'); width: 800px; height: 230px; background-position: center; background-size: cover;"></div></center><br>
+
+In general correspondences are unknown and they are jointly looked for. The general algorithm for correspondences and $F$:
+1. Find key points in the images (e.g., corner)
+2. Calculate potential matches 
+3. Estimate _epipolar_ geometry (use **RANSAC**)
+4. Improve match estimates and iterate 
 
 # Deep Learning for Computer Vision
 
