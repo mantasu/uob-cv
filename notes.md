@@ -47,7 +47,7 @@ _Rod_ cells (~`120m`) are responsible for vision at low light levees, _cones_ (~
 
 > Retina contains only 8% of blue _cones_ and equal proportion of red and green ones - they allow to discriminate colors `2nm` in difference and allow to match multiple wavelengths to a single color (does not include blending though)
 
-## Maths
+## Optic Physics
 
 Wave frequency $f$ (`Hz`) and energy $E$ (`J`) can be calculated as follows ($h=6.623\times 10^{34}$ - Plank's constant, $c=2.998\times 10^8$ - speed of light):
 
@@ -969,6 +969,58 @@ In general correspondences are unknown and they are jointly looked for. The gene
 2. Calculate potential matches 
 3. Estimate _epipolar_ geometry (use **RANSAC**)
 4. Improve match estimates and iterate 
+
+## Recognition
+
+### Features as Instances
+
+Each local feature region has a descriptor which is a point in a high-dimensional space (e.g., **SIFT**). An efficient way to perform feature retrieval is to make the problem similar to _test retrieval_, i.e., indexing. For that, each feature is mapped to tokens/words by quantizing the feature space via _clustering_ (to make a discrete set of "visual words", i.e., _bag of words_).
+
+> **Texton** - cluster center of filter responses over collection of images. It is assigned to features that are closest to it.
+
+To identify _textures_ (repeated local patterns), filters that look like patterns themselves are used to find them and then local windows are used for statistical description. _Textures_ can be represented by a `2D` graph of points representing windows (`x` - mean $\nabla_x$, `y` - mean $\nabla_y$). Points can be grouped together under the same **texton**.
+
+> _Inverted indexing_ (each "visual word" is assigned a list of images) is used to enable faster search at query time
+
+Given a fixed set of features, every image can be represented in terms of that set by a distribution of every feature occurrence. Then, given two such representations $d_j$ (desired image) and $q$ (query image), similarity can be calculated:
+
+$$\text{sim}(d_j,q)=\frac{\langle d_j, q\rangle}{||d_j||\ |||q||}$$
+
+Given some query and a database, retrieval quality is calculated by _precision_ (`num relevant` / `tot returned`) and _recall_ (`num relevant` / `tot relevant`). Obtaining all possible _precisions_ and _recalls_ for a single query forms a _PR_ curve under which the area can be calculated to produce an accuracy score.
+
+> For computational efficiency, hierarchical clustering is used to subgroup **textons**
+
+_Bag of words_ pros and cons:
+* `(+)` Flexible to geometry/deformation
+* `(+)` Compact summary of image content
+* `(+)` Vector representation for sets
+* `(-)` Ignored geometry must be verified
+* `(-)` Mixed foreground and background
+* `(-)` Unclear optimal vocabulary 
+
+### Instance Recognition
+
+Recognized instances must be spatially verified, e.g., using **RANSAC** (by checking support for possible transformations) or generalized **Hough Transform** (by allowing each feature to cast a vote on location, scale and orientation).
+
+**Term Frequency - Inverse Document Frequency (TF-IDF) weighting** - another way to retrieve query results taken from _text retrieval_. Such weighting describes frames by their word frequency and downweights words that appear often in the database (aims to retrieve results that have a lot of similarity with the query but overall are as little similar to other documents):
+
+$$t_i=\frac{n_{id}}{n_d}\log\frac{N}{n_i}$$
+
+Where:
+* $n_{id}$ - num occurrences of word $i$ in document $d$
+* $n_d$ - num words in document $d$
+* $n_i$ - num documents word $i$ occurs in
+* $N$ - tot num documents in the database
+
+> **Query Expansion** - acquiring filtered query results and reusing them for the same query to obtain even more results
+
+### Object Recognition
+
+**Object categorization** - given a small number of training samples, recognize a priori unknown instances and assign a correct label. There are `2` object categorization levels: instance (e.g., a car) and category (e.g., a bunch of cars). There are also different levels of abstraction: abstract (e.g., animal), basic (e.g., dog), individual (e.g., German Shepard). Basic is most commonly chosen as it reflects humans.
+
+**Supervised classification** - given a collection of labeled samples, a function is looked for that can predict labels for new samples. The function is good when the _risk_ (expected loss) is minimized. There are `2` models for that:
+* **Generative** - training data is used to build a  probability model (conditional densities, priors are modeled) [e.g., _CNN_]
+* **Discriminative** - a decision boundary is constructed directly (posterior is modeled) [e.g., _SVM_]
 
 # Deep Learning for Computer Vision
 
