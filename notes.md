@@ -19,7 +19,7 @@
 
 ## Computational Vision
 
-**Computational Vision** - the process of discovering from images what is present in the world and where. It is _challenging_ because it tries to recover lost information when reversing the imaging process (imperfect imaging prcess, discretized continuous world)
+**Computational Vision** - the process of discovering from images what is present in the world and where. It is _challenging_ because it tries to recover lost information when reversing the imaging process (imperfect imaging process, discretized continuous world)
 
 **Applications**:
 * Automated navigation with obstacle avoidance
@@ -29,15 +29,19 @@
 
 ## Human Vision
 
-Captured photons release energy which is used as electrical signals for us to see. Pupils dilate to accept as much light as needed to see clearly. _Rod_ cells (~`120m`) are responsible for vision at low light leves, _cones_ (~`6m`) are active at higher levels and are capable of color vision and have high spacial acuity. There's a `1-1` relationship of _cones_ and neurons so we are abe to resolve better, meanwhile many _rods_ converge to one neuron.
+Captured photons release energy which is used as electrical signals for us to see. A photocell in its membrane has _ion channels_ through which ions can flow out. As the light interacts with cell's _rhodopsins_ (type of receptor), the _ion channels_ close and a build-up of electrons occurs in the cell. Such negative charge is captured as an electrical signal by the nerve.
+
+_Rod_ cells (~`120m`) are responsible for vision at low light levees, _cones_ (~`6m`) are active at higher levels and are capable of color vision and have high spatial acuity. There's a `1-1` relationship of _cones_ and neurons so we are able to resolve better, meanwhile many _rods_ converge to one neuron.
+
+> Pupils dilate to accept as much light as needed to see clearly.
 
 **Receptive field** - area on which light must fall for neuron to be stimulated. A **receptive field** of a **Ganglion cell**  is formed from all _photoreceptors_ that synapse with it.
 
-**Ganglion cells** - cells located in retina that process visual information that begins as light entering the eye and transmit it to the brain. There are `2` types of them.
-* _On-center_ - fire when light is on centre
-* _Off-center_ - fire when light is around centre
+**Ganglion cells** - photocells located in _retina_ that process visual information that begins as light entering the eye and transmit it to the brain. There are `2` types of them.
+* _On-center_ - fire when light is on center
+* _Off-center_ - fire when light is somewhere around center
 
-**Ganglion cells** allow transmition of information about contrast. The size of the **receptive field** controls the spatial frequency information (e.g., small ones are stimulated by high frequencies for fine detail). **Ganglion cells** don't work binary (fire/not fire), the change the firing rate when there's light.
+**Ganglion cells** allow transition of information about contrast. The size of the **receptive field** controls the spatial frequency information (e.g., small ones are stimulated by high frequencies for fine detail). **Ganglion cells** don't work binary (fire/not fire), the change the firing rate when there's light.
 
 **Trichromatic coding** - any color can be reproduced using 3 primary colors (red, blue, green).
 
@@ -58,7 +62,7 @@ $$E=hf$$
 2. Ray, its reflection and the normal are _coplanar_
 3. Ray is refracted when it transits medium
 
-**Snell's Law** - given refraction indeces $n_1$ and $n_2$, and "in" and "out" angles $\alpha_1$ and $\alpha_2$, there is a relation: $n_1 \sin \alpha_1=n_2 \sin \alpha_2$
+**Snell's Law** - wave crests cannot be created or destroyed at the interface, so to make the waves match up, the light has to change the direction. I.e., given refraction indices $n_1$ and $n_2$, and "in" and "out" angles $\alpha_1$ and $\alpha_2$, there is a relation: $n_1 \sin \alpha_1=n_2 \sin \alpha_2$
 
 
 <center><img alt="Geometric Optics" src="https://glossary.oilfield.slb.com/-/media/publicmedia/ogl98151.ashx?sc_lang=en"></center>
@@ -91,7 +95,7 @@ $$\alpha=\tan^{-1}\left(\frac{\nabla_yf}{\nabla_xf}\right)$$
 
 ## Detection Process
 
-Edge dectiptors:
+Edge descriptors:
 * **Edge direction** - perpendicular to the direction of the highest change in intensity (to _edge normal_)
 * **Edge strength** - contrast along the normal
 * **Edge position** - image position where the edge is located
@@ -125,7 +129,7 @@ Note that given an **intensity image** $I$ of dimensions $H\times W$ and a filte
 
 $$(I\otimes K)_{h,w}=\sum_{n=-N}^N\sum_{m=-M}^MI_{h+n,w+m}K_{N+n,M+m}$$
 
-> We usually set a threshold for calculated gradient map to distinguish where the edge is.
+> We usually set a threshold for calculated gradient map to distinguish where the edge is. We may also upsample the image to enhance the features.
 
 If we use noise smoothing filter, instead of looking for an image gradient after applying the noise filter, we can take the derivative of the noise filter and then convolve it (because mathematically it's the same):
 
@@ -178,22 +182,21 @@ Algorithm:
 
 > For **edge linking** high thresholding is used to start curves and low to continue them. Edge direction is also utilized.
 
-# Scale Invariant Feature Transform
-
-**SIFT** - an algorithm to detect and match the local features in images
-
-**Invariance Types** (and how to achieve them):
-* **Illumination** - luminosity changes
-    * Difference based metrics
-* **Scale** - image size change
-    * _Pyramids_ - average pooling with stride `2` multiple times
-    * _Scale Space_ - apply _Pyramids_ but take **DOG**s (_Differences of Gaussians_) in between and keep features that are repeatedly persistent
-* **Rotation** - roll the image along the `x` axis
-    * Rotate to most dominant gradient direction (found by histograms)
-* **Affine** -
-* **Perspective** - 
-
 # Motion
+
+## Scale Invariant Feature Transform
+
+**SIFT** - an algorithm to detect and match the local features (should be invariant) in images. **Invariance Types** (and how to achieve them):
+* **Illumination** - luminosity changes (solved by difference-based metrics)
+* **Scale** - image size change, magnification change (solved by _pyramids_, _scale space_)
+* **Rotation** - roll change along the `x` axis (solved by rotating to the most dominant gradient direction)
+* **Affine** - generalization of rotation, scaling, stretching etc (solved by normalizing through _eigenvectors_)
+* **Perspective** - changes in view perspective (solved by _rigid transform_)
+
+
+> _Pyramids_ - average pooling with stride `2` multiple times
+
+> _Scale Space_ - apply _Pyramids_ but take **DOG**s (_Differences of Gaussians_) in between and keep features that are repeatedly persistent
 
 ## Visual Dynamics
 > By analyzing motion in the images, we look at part of the anatomy and see how it changes from subject to subject (e.g., through treatment). This can also be applied to _tracking_ (e.g., monitor where people walk).
@@ -234,8 +237,9 @@ Algorithm of **Motion Correspondence**:
 2. Calculate degree of similarity for each match and the likelihood
 3. Revise likelihood using nearby matches
 
-Degree of similarity $s$ is just the _sum of squared differences_ of pixels between `2` patches $i$ and $j$ (of size $N\times N$) and the likelihood is just the normalized weights $w$ (where $\alpha$ - constant)
-$$s_{ij}=\sum_{n=1}^{N\times N}(p_i^{(n)}-p_j^{(n)})^2$$
+Degree of similarity $s$ is just the _sum of differences_ of pixels between `2` patches $i$ (at time $t$) and $j$ (at time $t+1$) (of size $N\times N$) and the likelihood is just the normalized vector of weights $w$ (where $\alpha$ - constant):
+
+$$s_{ij}=\sum_{n=1}^{N\times N}(p_i^{(n)}-p_j^{(n)})$$
 $$w_{ij}=\frac{1}{1+\alpha s_{ij}}$$
 
 ## Hough Transform
@@ -278,8 +282,8 @@ We may want to match landmarks (control points), pixel values, feature maps or a
 ### Type of transform
 
 Transformations include affine, rigid, spline etc. Most popular:
-* **Rigid** - composed of `3` rotations and `3` translations (so no distortion). Transforms are linear and can be a `4x4` matrices (1 translation and 3 rotation).
-* **Affine** - composed of `3` rotations, `3` translations, `3` stretches and `3` shears. Transforms are also linear and can be represented as `4x4` matrices
+* **Rigid** - composed of `3` rotations and `3` translations (so no distortion). Transforms are linear and can be `4x4` matrices (1 translation and 3 rotation).
+* **Affine** - composed of `3` rotations, `3` translations, `3` scales and `3` shears. Transforms are also linear and can be represented as `4x4` matrices
 * **Piecewise Affine** - same as affine except applied to different components (local zones) of the image, i.e., a piecewise transform of `2` images.
 * **Non-rigid (Elastic)** - transforming via `2` forces - _external_ (deformation) and _internal_ (constraints) - every pixel moves by different amount (non-linear).
 
@@ -291,7 +295,7 @@ $$\text{MSE}=\frac{1}{K}\sum_{k=1}^K \left(I(x_k) - J(T_{\mathbf{p}}(x_k))\right
 
 **Mutual Information** - maximize the clustering of the **Joint Histogram** (maximize information which is mutual between 2 images):
 * **Image Histogram** (`hist`) - a normalized histogram (`y` - num pixels, `x` - intensity) representing a discrete **PDF** where peaks represent some regions.
-* **Joint Histogram** (`histogram2`) - same as histogram, expcept pairs of intensities are counted (`x`, `y` - intensities, `color` - num pixel pairs). Sharp heatmap = high similarity.
+* **Joint Histogram** (`histogram2`) - same as histogram, except pairs of intensities are counted (`x`, `y` - intensities, `color` - num pixel pairs). Sharp heatmap = high similarity.
 
 $$\text{MI}(I,J|T)=\sum_{i\in I}\sum_{j\in J}p(i,j)\log\frac{p(i,j)}{p(i) p(j)}$$
 
@@ -318,7 +322,7 @@ More details: [correlation](https://www.youtube.com/watch?v=_r_fDlM0Dx0), [norma
 * _As objects_: e.g., individual cells, parts of anatomy
 
 **Segmentation techniques**
-* _Region-based_: global (single pixels - thresholding), local (pixel groups - clustering)
+* _Region-based_: global (single pixels - thresholding), local (pixel groups - clustering, PCA )
 * _Boundary-based_: gradients (finding contour energy), models (matching shape boundaries)
 
 ## Semi-Automated Segmentation
@@ -439,7 +443,7 @@ _Infrared_ light is used to project surface features and solve the problem of "n
 
 Distance from the object is found by the time taken for light to travel from camera to the scene. _Directional illumination_ is used to focus photon shooting at just one direction which restricts the view area. Two devices are used:
 
-* **Lidar** - has a photosensor and a lase pulse on the same axis which is rotated and each measurement is acquired through time. It is robust, however hard to measure short distances due to high speed of light; also is large and expensive.
+* **Lidar** - has a photosensor and a laser pulse on the same axis which is rotated and each measurement is acquired through time. It is robust, however hard to measure short distances due to high speed of light; also is large and expensive.
 * **Time of flight camera** - can image the scene all at once. It uses a spatially resolved sensor which fires light waves instead of pulses and each light wave is recognized by its relative phase. It is fast but depth measure depends on wave properties.
 
 ### Structured light imaging
@@ -458,7 +462,7 @@ It is time-consuming to move one stripe over time, instead multiple stripes can 
   * **Hamming distance** - a metric for comparing `2` binary data (sum of digits of a difference between each bit), for instance, the distance between $4$ (`0100`) and $14$ (`1110`) is $2$, whereas between $4$ (`0100`) and $6$ (`0110`) is $1$
   * Given that **Grey Code** has a **Hamming distance** of `1` and **Inverse Grey Code** has a **Hamming distance** of `N-1`, progression _binary encodings_ belong to neither category. This means a lot of flexibility and a variety of possible algorithms.
 
-> In **time multiplexing**, because of the lenses, _defocus_ may occur which mangles the edges and because of the high frequency information about regions could be lost. **Sinusoidal patterns** are used which are continuous and less affected by _defocus_.
+> In **time multiplexing**, because of the lenses, _defocus_ may occur which mangles the edges and, because of the high frequency, information about regions could be lost. **Sinusoidal patterns** are used which are continuous and less affected by _defocus_.
 
 **Sinusoidal patterns** - patterns encoded by a geometric function ($\sin(2\pi f \phi) + 1) / 2$ which has a frequency and a phase which encodes a pixel location. They work as **time of flight cameras** - the longer the waves (lower $f$), the larger the range, but more noise.
 
@@ -716,7 +720,7 @@ Several ways to solve **tissue scattering**:
 
 ## Appearance Based
 
-**Appearance based recognition** - characterization of some aspects of the image via statistical methods. Useful when a lot of information is captured using multiple viewpoints because An object can look different from a different angle and it may be difficult to recognize using a model which is **viewpoint-invariant**. A lot of processing is involved in statistical approach.
+**Appearance based recognition** - characterization of some aspects of the image via statistical methods. Useful when a lot of information is captured using multiple viewpoints because an object can look different from a different angle and it may be difficult to recognize using a model which is **viewpoint-invariant**. A lot of processing is involved in statistical approach.
 
 > **SIFT** can be applied to find features in the desired image which can further be re-described (e.g., scaled, rotated) to match the features in the dataset for recognition (note: features must be collected from different viewpoints in the dataset)
 
@@ -974,8 +978,87 @@ $$\text{CE}(\hat{\mathbf{y}}, \mathbf{y})=-\sum_{n=1}^N y_n \log \hat{y}_n$$
 
 $$\mathbf{w}\leftarrow \mathbf{w} - \alpha \nabla_{\mathbf{w}} E(\mathbf{w})$$
 
-# Questions
-1. **Introduction**
+# Practice Questions
+1. **Visual Perception**
     * Why is computational vision challenging? Some applications.
-5. **Registration & Segmentation**
+    * How photocell's interaction with light is registered as an electric signal?
+    * Difference between _rods_ & _cones_
+    * How **Ganglion cells** work + types
+    * **Trichromatic coding** + how is color captured in the eye
+    * Perceivable electormagnetic wavelengths range
+    * **Law of Geometric Optics** + **Snell's Law**
+    * **Focal length** of a human eye
+    * **Lens** + **Magnification** formulas
+    * How curved image plane impacts object/image approximation?
+
+2. **Edge Filters**
+    * **Intensity image** + **Colormap** + **Image**
+    * How is _magnitude_ and _direction_ computed of a gradient map?
+    * Edge descriptors, detection steps and detection criteria
+    * How `1st` order edge detector works; what are some popular ones?
+    * How `2nd` order edge detector works; what is a popular operator?
+    * What filter is used for noise removal; how can it be created?
+    * Noise suppression-localization tradeoff
+    * How to combine noise and edge filter into one? Why is it useful?
+    * **Canny Edge Detection** algorithm
+
+3. **Motion**
+    * **SIFT** and types of **invariances**
+    * Where image motion analysis can be applied?
+    * **Optical Flow** + its usage
+    * **Difference Picture** + usage of **connectedness** to clean up noise
+    * **Motion correspondence** and its `3` principles + **Aperture problem**
+    * Algorithm for **Motion correspondence** and what is used for degree of similarity
+    * How **Hough Transform** works?
+
+4. **Registration & Segmentation**
+   * **Image Registration** and its cases; how it can be expressed mathematically?
+   * Types of entities we want to match and transformations we may encounter
+   * **Conservation of Intensity**, **Mutual Information** and **Normalized CC**  
    * How image segmentation (histogram-based) depends on image resolution?
+   * **Image segmentation** + its techniques
+   * **Image representation** and **Image characterization** types
+   * **Thresholding** for segmentation + its types (what is **Otsu Threshold**?)
+   * **Mathematical Morphology** for segmentation, how does it incorporate structuring elements?
+   * **Active Contours** for segmentation, what is **energy** and **snake** in the image?
+   * **Watershed** for segmentation
+
+5. **3D Imaging**
+   * **3D Imaging** applications and why is it useful?
+   * **Passive Imaging** and **Active Imaging** + challenges of each
+   * **Stereophotogrammetry**, **Structure from motion** and **Depth from focus** - how it works + challenges
+   * How does **Active Stereophotogrammetry** work + its challenges?
+   * **Structured light imaging** + its `1D` and `2D` devices
+   * **Time multiplexing** and why we need it?
+   * What are **sinusoidal patterns** used for?
+   * **Photometric stereo** + its challenges.
+   * Reflectance types and diffusive illumination formula
+   * How does **surface reconstruction** work + how **Poisson** function contributes to it?
+   * How does **surface registration** work + how **Kabsch** algorithm contributes to it?
+
+6. **Face Recognition with PCA**
+   * _Variance_ and _Covariance_ formulas + how to compute **Covariance Matrix** $\Sigma$?
+   * **PCA** + its algorithm
+   * Where **PCA** is not suitable?
+   * **PCA** expressed as **SVD**
+   * **Eigenface** + how to compute it + where are they used?
+   * Face recognition given a dataset of **eigenfaces**
+
+7. **Medical Image Analysis**
+   * **Thermography** and where is it used?
+   * How to take an **x-ray photo** and where is it used?
+   * How to perform **CT** and why do we use it?
+   * How does **PET** work? Is it structural or functional imaging? Why do we combine it with **CT**?
+   * How doe imaging with **ultrasound** works? What's its advantage?
+   * How **pulse oximeters** work? How is light used for brain imaging? Problem of **tissue scattering** + how to solve it?
+   * How do **MRI** and **FMRI** work? Why are they preferred over **CT**?
+
+8. **Object Recognition**
+   * **Viewpoint invariance** + _sensitivity_-_stability_ tradeoff
+   * **Marr's** _model-based_ algorithm + how is it similar to brain?
+   * How does recognition by **Components Theory** works?
+   * Problem of **model-based** object recognition
+   * How does **appearance-based** object recognition works? How **SIFT** becomes handy?
+   * Difference between **Part-based model** and **Constellation Model**
+   * **Hierarchical Architecture** for object recognition 
+   * When o use **appearance-based** and when to use **model-based** object recognition? 
