@@ -1029,6 +1029,15 @@ Learning types:
 * **Supervised learning** - given input, predict output. `2` types: _regression_ (continuous values), _classification_ (labels)
 * **Unsupervised learning** - discover internal representation of an input (also includes _self-supervised_ learning)
 
+Applications to computer vision:
+* **Classification** - assign class labels to images [_ResNet_, _SENet_]
+* **Detection** - identify rectangular regions of objects [_Faster R-CNN_, _YOLO_]
+* **Segmentation** - classify each pixel to a specific category [_DeepLab_, _UNet_]
+* **Low-level vision** - pixel-based processing techniques (denoising, super-resolution, inpainting etc.)
+* **3D vision** - `3D`/depth reconstruction [_NERF_]
+* **Vision + X** - processing vision along with other modalities like audio/speech (e.g., DALLE)
+
+
 Artificial neuron representation:
 1. **$\mathbf{x}$** - input vector ("synapses") is just the given features
 2. **$\mathbf{w}$** - weight vector which regulates the importance of each input
@@ -1044,21 +1053,30 @@ Artificial neural network representation:
 
 Popular activation functions - _ReLU_, _sigmoid_ and _softmax_, the last two of which are mainly used in the last layer before the error function:
 
-$$\text{ReLU}(x)=\max(0, x)$$
-
-$$\sigma(x)=\frac{1}{1+\exp(-x)}$$
-
-$$\text{softmax}(x)=\frac{\exp(x)}{\sum_{x'\in\mathbf{x}}\exp(x')}$$
+$$\text{ReLU}(x)=\max(0, x);\ \text{ }\ \text{ }\ \text{ }\ \sigma(x)=\frac{1}{1+\exp(-x)};\ \text{ }\ \text{ }\ \text{ }\ \text{softmax}(x)=\frac{\exp(x)}{\sum_{x'\in\mathbf{x}}\exp(x')}$$
 
 Popular error functions - _MSE_ (for regression), _Cross Entropy_ (for classification):
 
-$$\text{MSE}(\hat{\mathbf{y}}, \mathbf{y})=\frac{1}{N}\sum_{n=1}^N(y_n-\hat{y}_n)^2$$
-
-$$\text{CE}(\hat{\mathbf{y}}, \mathbf{y})=-\sum_{n=1}^N y_n \log \hat{y}_n$$
+$$\text{MSE}(\hat{\mathbf{y}}, \mathbf{y})=\frac{1}{N}\sum_{n=1}^N(y_n-\hat{y}_n)^2;\ \text{ }\ \text{ }\ \text{ }\ \text{ }\ \text{CE}(\hat{\mathbf{y}}, \mathbf{y})=-\sum_{n=1}^N y_n \log \hat{y}_n$$
 
 **Backpropagation** - weight update algorithm during which the gradient of the error function with respect to the parameters $\nabla_{\mathbf{w}}E$ is calculated to find the update direction such that the updated weights $\mathbf{w}$ iteratively would lead to minimized error value.
 
 $$\mathbf{w}\leftarrow \mathbf{w} - \alpha \nabla_{\mathbf{w}} E(\mathbf{w})$$
+
+> To avoid _overfitting_, early stopping, dropout, batch normalization, regularization data augmentation are used. Also data preprocessing, e.g., **PCA**, normalization
+
+**Locally connected layer** - neurons which are connected only to local regions of an image instead of all the pixels. This allows less computational resources and limits parameter space allowing less samples for training.
+
+The size of the feature map acquired after convolution depends on the _kernel size_ (filter width/height), _padding_ (border size), _dilation_ (gap size ratio between filter values) and _stride_ (sliding step size):
+
+$$S_{out}=\frac{S_{in} + 2 \times \text{padding} - \text{dilation} \times (\text{kernel\_size}-1)-1}{\text{stride}}-1$$
+
+**Transfer Learning** - if there is not enough data, a majority of the network can be initialized with already learned weights (majority of which can be kept frozen during training) from another network and only the remaining part can be trained.
+
+Modern research topics:
+* **Generative Adversarial Networks (GANs)** - given some input space (created via **VAEs**), a _generator_ creates an image and a _discriminator_ classifies how real it is. It is a `min`-`max` optimization problem. [_DCGAN_]
+* **Self-supervised learning** - learning from the data itself without labels. There are `2` types: learning _specific tasks_ (labels are within the training samples, e.g., colorizing) and learning _general representations_ (trained on general data, then fine-tuned). Other modalities like audio can also be used to self-supervision.
+* **Transformers (vision)** - _multi-head attention_ module is used which transforms the input data to value, key and query such that they have a high correlation.Image patches are used as tokens to do data fusion.
 
 # Practice Questions
 1. **Visual Perception**
