@@ -768,7 +768,7 @@ Such **weak-perspective projection** is used when scene depth is small because _
 
 ### Camera Calibration
 
-Projection of a `3D` coordinate system is _extrinsic_ (`3D` world $\to$ `3D` camera) and _intrinsic_ (`3D` camera $\to$ `2D` image). An acquired point in camera `3D` coordinates is projected to _image plane_, then to discretisized image. General camera has `11` projection parameters.
+Projection of a `3D` coordinate system is _extrinsic_ (`3D` world $\to$ `3D` camera) and _intrinsic_ (`3D` camera $\to$ `2D` image). An acquired point in camera `3D` coordinates is projected to _image plane_, then to discretized image. General camera has `11` projection parameters.
 
 For _extrinsic_ projection real world coordinates are simply aligned with the camera's coordinates via translation and rotation:
 
@@ -974,7 +974,7 @@ In general correspondences are unknown and they are jointly looked for. The gene
 
 ### Features as Instances
 
-Each local feature region has a descriptor which is a point in a high-dimensional space (e.g., **SIFT**). An efficient way to perform feature retrieval is to make the problem similar to _test retrieval_, i.e., indexing. For that, each feature is mapped to tokens/words by quantizing the feature space via _clustering_ (to make a discrete set of "visual words", i.e., _bag of words_).
+Each local feature region has a descriptor which is a point in a high-dimensional space (e.g., **SIFT**). An efficient way to perform feature retrieval is to make the problem similar to _text retrieval_, i.e., indexing. For that, each feature is mapped to tokens/words by quantizing the feature space via _clustering_ (to make a discrete set of "visual words", i.e., _bag of words_).
 
 > **Texton** - cluster center of filter responses over collection of images. It is assigned to features that are closest to it.
 
@@ -1016,7 +1016,7 @@ Where:
 
 ### Object Recognition
 
-**Object categorization** - given a small number of training samples, recognize a priori unknown instances and assign a correct label. There are `2` object categorization levels: instance (e.g., a car) and category (e.g., a bunch of cars). There are also different levels of abstraction: abstract (e.g., animal), basic (e.g., dog), individual (e.g., German Shepard). Basic is most commonly chosen as it reflects humans.
+**Object categorization** - given a small number of training samples, recognize a priori unknown instances and assign a correct label. There are `2` object categorization levels: _instance_ (e.g., a car) and _category_ (e.g., a bunch of cars). There are also different levels of abstraction: _abstract_ (e.g., animal), _basic_ (e.g., dog), _individual_ (e.g., German Shepard). Basic is most commonly chosen as it reflects humans.
 
 **Supervised classification** - given a collection of labeled samples, a function is looked for that can predict labels for new samples. The function is good when the _risk_ (expected loss) is minimized. There are `2` models for that:
 * **Generative** - training data is used to build a  probability model (conditional densities, priors are modeled) [e.g., _CNN_]
@@ -1161,4 +1161,54 @@ Modern research topics:
    * How does **appearance-based** object recognition works? How **SIFT** becomes handy?
    * Difference between **Part-based model** and **Constellation Model**
    * **Hierarchical Architecture** for object recognition 
-   * When o use **appearance-based** and when to use **model-based** object recognition? 
+   * When o use **appearance-based** and when to use **model-based** object recognition?
+
+9. **Robot Vision**
+   1.  **Camera Geometry**
+       * How does **CMOS**/**CCD** photosensor work along with **Bayer Filter**?
+       * How **pinhole cameras** work and why are they dark?
+       * **Weak-perspective projection** principle (when depth is small)
+       * Difference between _intrinsic_ and _extrinsic_ projection
+       * **Homogenous coordinates**
+       * **Calibration matrix** $K$ (and its parameters) and a general projection matrix (how can it be computed?)
+       * **Vanishing point** and **horizon**
+   2.  **Alignment & Features**
+       * **Alignment**, **affine transform** + examples of **parametric wrapping**
+       * **RANSAC** and its algorithm (when it can fail?)
+       * **Homography** and **stitching**
+       * Estimation of projection matrix $H$ as optimization problem
+       * **Local features** and their properties
+       * **Harris Corner Detector** and its approximated expression (by _Taylor Series_) convolved with _Gaussian_
+       * **Corner Response Function** and why it is used. How invariant **Harris Detector** is?
+       * **Hessian Corner Detector**
+       * How **automatic scale selection** works?
+       * How are **blobs** detected and how _pyramids_ are used for feature selection?
+       * **SIFT Descriptor** and how to create it. How invariant is is?  
+   3.  **Multiple-View Geometry**
+       * **Stereo imaging**; difference between _linear_ and _non-linear_ approach for `3D` point reconstruction
+       * When and how can _disparity_ be used for depth estimation?
+       * When _epipolar geometry_ is used for depth estimation? Terms: _epipolar line_, _epipolar plane_, _epipole_, _baseline_
+       * Why constraints are needed for a stereo system? How to approach them in calibrated and non-calibrated cases?
+       * _Essential matrix_, _fundamental matrix_ and **Epipolar Constraint**
+       * What correspondences to use for estimating $F$?
+       * **SFM** and what projection error is used?
+       * Iterative algorithm for estimating $F$ 
+   4.  **Recognition**
+       * How feature retrieval is approached via _bag of words_? Its pros and cons?
+       * What is **texton** and how _textures_ are identified?
+       * How to calculate similarity between given and queried images? What is _inverted indexing_?
+       * How to evaluate retrieval accuracy based on _precision_-_recall_ curve?
+       * How does retrieval based on **TF-IDF weighting** work?
+       * **Query expansion**
+       * **Object categorization**; its level types and abstraction types
+       * **Supervised classification** and its `2` types
+
+10. **Deep Learning**
+    * Deep learning types, applications for CV
+    * Artificial neuron and NN representation
+    * Popular activation and error functions
+    * **Backpropagation** and how to tackle _overfitting_?
+    * **Local connectivity** vs **global connectivity**
+    * How to compute feature map size given `kernel_size`, `padding`, `dilation` and `stride`?
+    * **Transfer learning**
+    * `3` modern research techniques for imaging and how they generally work?
